@@ -25,21 +25,21 @@
         cards: [
           {
             id: 1,
-            title: 'Card 1',
+            title: 'Products',
             image: 'https://via.placeholder.com/600x400',
             to: '/products',
           },
           {
             id: 2,
-            title: 'Card 2',
+            title: 'Carts',
             image: 'https://via.placeholder.com/600x400',
-            to: '/products',
+            to: '/carts',
           },
           {
             id: 3,
-            title: 'Card 3',
+            title: 'Users',
             image: 'https://via.placeholder.com/600x400',
-            to: '/products',
+            to: '/users',
           },
         ],
       };

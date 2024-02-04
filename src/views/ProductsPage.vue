@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <h1>Products Page</h1>
+        <h1 class="mb-5">Products Page</h1>
 
         <v-row>
             <!-- Button for getAllProducts -->
@@ -57,7 +57,7 @@
 
         <v-row v-if="currentView === 'products' && products.length > 0">
             <v-col v-for="product in paginatedProducts" :key="product.id" class="ma-4">
-                <v-card>
+                <v-card elevation="10">
                     <v-img :src="product.thumbnail" height="200"></v-img>
                     <v-card-title>{{ product.title }}</v-card-title>
                     <v-card-subtitle>{{ product.category }}</v-card-subtitle>
@@ -69,7 +69,7 @@
                     <v-card-subtitle>{{ product.stock }} In Stock</v-card-subtitle>
                     <v-menu>
                         <template v-slot:activator="{ props }">
-                            <v-btn icon="mdi-dots-vertical" v-bind="props"></v-btn>
+                            <v-btn icon="mdi-dots-vertical" elevation="5" v-bind="props"></v-btn>
                         </template>
 
                         <v-list>
