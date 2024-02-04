@@ -29,14 +29,9 @@
                 <v-text-field v-if="showFilterUsersInput" v-model="filterValue" label="Enter Filter Value"></v-text-field>
                 <v-btn v-if="showFilterUsersInput" @click="filterUsers">Submit</v-btn>
             </v-col>
-
-            <!-- Button for showCarts -->
-            <v-col>
-                <v-btn @click="showCarts">Show Carts</v-btn>
-            </v-col>
             <!-- Button for adding a new user -->
             <v-col>
-                <v-btn @click="openAddUserDialog">Add User</v-btn>
+                <v-btn class="green-border" @click="openAddUserDialog">Add User</v-btn>
             </v-col>
 
         </v-row>
@@ -55,7 +50,6 @@
             </v-col>
         </v-row>
 
-        <!-- Show Users based on the current view -->
         <!-- Show Users based on the current view -->
         <v-row v-if="currentView === 'users' && users.length > 0 && !loading">
             <v-col v-for="user in paginatedUsers" :key="user.id" class="ma-4" cols="12" md="6" lg="3">
@@ -237,17 +231,35 @@
                     </v-expansion-panels>
                     <v-menu>
                         <template v-slot:activator="{ props }">
-                            <v-btn icon="mdi-dots-vertical" elevation="5" v-bind="props"></v-btn>
+                            <v-btn icon="mdi-dots-vertical" elevation="5" class="ma-2" v-bind="props"></v-btn>
                         </template>
 
                         <v-list>
-                            <v-list-item @click="openUpdateUserDialog(user)">
+                            <v-list-item @click="getUserCarts(user.id)">
+                                <template v-slot:prepend>
+                                    <v-icon icon="mdi-cart"></v-icon>
+                                </template>
+                                <v-list-item-title>Get Carts</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="getUserPosts(user.id)">
+                                <template v-slot:prepend>
+                                    <v-icon icon="mdi-post"></v-icon>
+                                </template>
+                                <v-list-item-title>Get Posts</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item @click="getUserTodos(user.id)">
+                                <template v-slot:prepend>
+                                    <v-icon icon="mdi-check-all"></v-icon>
+                                </template>
+                                <v-list-item-title>Get Todos</v-list-item-title>
+                            </v-list-item>
+                            <v-list-item class="text-blue-darken-3" @click="openUpdateUserDialog(user)">
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-pencil"></v-icon>
                                 </template>
                                 <v-list-item-title>Update</v-list-item-title>
                             </v-list-item>
-                            <v-list-item @click="deleteUser(user.id)">
+                            <v-list-item class="text-red-darken-3" @click="deleteUser(user.id)">
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-delete"></v-icon>
                                 </template>
@@ -258,11 +270,82 @@
                 </v-card>
             </v-col>
         </v-row>
+        <!-- Show posts based on the current view -->
+        <v-row v-else-if="currentView === 'posts' && userPosts.length > 0">
+            <v-col v-for="(post, index) in userPosts" :key="index" class="ma-4" cols="12" md="6" lg="4">
+                <v-card elevation="10" class="w-100 pa-3">
+                    <v-card-title v-html="post.title"></v-card-title>
+                    <v-card-text>
+                        <div v-html="post.body"></div>
+                    </v-card-text>
+                    <v-card-subtitle>
+                        Tags: {{ post.tags.join(', ') }}, Reactions: {{ post.reactions }}
+                    </v-card-subtitle>
+                </v-card>
+            </v-col>
 
+            <v-col class="ma-4" cols="12">
+                <v-btn @click="closePostsView">Back to Users</v-btn>
+            </v-col>
+        </v-row>
+        <!-- Show todos based on the current view -->
+        <v-row v-else-if="currentView === 'todos' && userTodos.length > 0">
+            <v-col v-for="(todo, index) in userTodos" :key="index" class="ma-4" cols="12" md="6" lg="4">
+                <!-- Use dynamic class binding to set border color based on completion -->
+                <v-card :class="{ 'green-border': todo.completed, 'red-border': !todo.completed }" elevation="10"
+                    class="w-100 pa-3">
+                    <v-card-title v-html="todo.todo"></v-card-title>
+                    <!-- Use dynamic style binding to set text color based on completion -->
+                    <v-card-subtitle :style="{ color: todo.completed ? 'green' : 'red' }">Completed: {{ todo.completed ?
+                        'Yes' : 'No' }}</v-card-subtitle>
+                </v-card>
+            </v-col>
 
-
-
-
+            <v-col class="ma-4" cols="12">
+                <v-btn @click="closeTodosView">Back to Users</v-btn>
+            </v-col>
+        </v-row>
+        <!-- Dialog for displaying user carts -->
+        <v-dialog v-model="showCartsDialog" max-width="600">
+            <v-card>
+                <v-card-title>User Carts</v-card-title>
+                <v-card-text>
+                    <!-- Display user carts here -->
+                    <v-list v-if="userCarts.length > 0">
+                        <v-list-item v-for="(cart, cIndex) in userCarts" :key="cIndex">
+                            <v-list-item>
+                                <v-list-item-title>Cart ID: {{ cart.id }}</v-list-item-title>
+                                <v-list-item-subtitle>
+                                    Total: {{ cart.total }}, Discounted Total: {{ cart.discountedTotal }}
+                                </v-list-item-subtitle>
+                                <!-- Display products within the cart -->
+                                <v-list-item v-if="cart.products.length > 0">
+                                    <v-list-item v-for="(product, pIndex) in cart.products" :key="pIndex">
+                                        <v-list-item>
+                                            <v-list-item-title>{{ product.title }}</v-list-item-title>
+                                            <v-list-item-subtitle>
+                                                Price: {{ product.price }}, Quantity: {{ product.quantity }},
+                                                Total: {{ product.total }}
+                                            </v-list-item-subtitle>
+                                            <!-- Display more product details as needed -->
+                                        </v-list-item>
+                                    </v-list-item>
+                                </v-list-item>
+                                <v-list-item v-else>
+                                    <v-list-item>No products available in this cart.</v-list-item>
+                                </v-list-item>
+                            </v-list-item>
+                        </v-list-item>
+                    </v-list>
+                    <v-list v-else>
+                        <v-list-item>No carts available for this user.</v-list-item>
+                    </v-list>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="closeCartsDialog">Close</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <!-- loading animation -->
         <v-row v-if="loading">
             <v-col>
@@ -545,6 +628,11 @@ export default {
                 ssn: '',
                 userAgent: ''
             },
+            showCartsDialog: false,
+            userCarts: [],
+            userPosts: [],
+            showPostDialog: false,
+            selectedPost: {},
             loading: false,
         };
     },
@@ -572,6 +660,8 @@ export default {
                     this.loading = false; // Set loading to false whether the request succeeds or fails
                 });
         },
+
+        //single user
         toggleSingleUser() {
             this.showSingleUserInput = !this.showSingleUserInput;
         },
@@ -588,6 +678,9 @@ export default {
                     console.error('Error fetching single user:', error);
                 });
         },
+
+        //////////////////////////////////////////////////////////
+        //search users
         toggleSearchUsers() {
             this.showSearchUsersInput = !this.showSearchUsersInput;
         },
@@ -604,6 +697,9 @@ export default {
                     console.error('Error searching users:', error);
                 });
         },
+
+        ////////////////////////////////////////////////////////
+        //Filter users
         toggleFilterUsers() {
             this.showFilterUsersInput = !this.showFilterUsersInput;
         },
@@ -621,10 +717,81 @@ export default {
                     console.error('Error filtering users:', error);
                 });
         },
-        showCarts() {
-            // Implement logic to show user's carts
-            // Similar to the existing logic for showing products and carts
+
+        //////////////////////////////////////////////////////////
+        //carts
+        closeCartsDialog() {
+            this.showCartsDialog = false;
         },
+        getUserCarts(userId) {
+            // Fetch user carts based on user's ID
+            fetch(`https://dummyjson.com/users/${userId}/carts`)
+                .then(res => res.json())
+                .then(data => {
+                    // Update userCarts data property with fetched data
+                    this.userCarts = data.carts;
+                    // Show the dialog
+                    this.showCartsDialog = true;
+                })
+                .catch(error => {
+                    console.error('Error fetching user carts:', error);
+                    // Handle error as needed
+                });
+        },
+
+        /////////////////////////////////////////////////////////////////////////////////////
+        //posts
+        closePostsView() {
+            this.currentView = 'users';
+        },
+        openPostDialog(post) {
+            this.selectedPost = { ...post }; // Create a new object to avoid reactivity issues
+            this.showPostDialog = true;
+        },
+        closePostDialog() {
+            this.showPostDialog = false;
+        },
+        truncateText(text, maxLength) {
+            return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+        },
+        getUserPosts(userId) {
+            // Fetch user posts based on user's ID
+            fetch(`https://dummyjson.com/users/${userId}/posts`)
+                .then(res => res.json())
+                .then(data => {
+                    // Update userPosts data property with fetched data
+                    this.userPosts = data.posts;
+                    // Switch to the posts view
+                    this.currentView = 'posts';
+                })
+                .catch(error => {
+                    console.error('Error fetching user posts:', error);
+                    // Handle error as needed
+                });
+        },
+
+        ////////////////////////////////////////////////////////////////////
+        //todos
+        getUserTodos(userId) {
+            // Fetch user todos using userId
+            fetch(`https://dummyjson.com/users/${userId}/todos`)
+                .then((res) => res.json())
+                .then((data) => {
+                    // Update component data property to store todos
+                    this.userTodos = data.todos;
+                    // Switch the current view to 'todos'
+                    this.currentView = 'todos';
+                });
+        },
+        closeTodosView() {
+            // Reset the userTodos data property
+            this.userTodos = [];
+            // Switch the current view back to 'users'
+            this.currentView = 'users';
+        },
+
+        ///////////////////////////////////////////////////////////////////
+        //pages
         prevPage() {
             if (this.currentPage > 1) {
                 this.currentPage--;
@@ -638,6 +805,9 @@ export default {
         updateTotalPages() {
             this.totalPages = Math.ceil(this.users.length / this.pageSize);
         },
+
+        /////////////////////////////////////////////////////////////
+        //update user
         openUpdateUserDialog(user) {
             // Display the user data in the update dialog
             this.updatedUser = { ...user };
@@ -678,6 +848,9 @@ export default {
         closeUpdateUserDialog() {
             this.updateUserDialog = false;
         },
+
+        /////////////////////////////////////////////////////////////////////////////
+        //delete user
         deleteUser(userId) {
             // Assuming a DELETE request to delete the user on the server
             axios.delete(`https://dummyjson.com/users/${userId}`)
@@ -691,6 +864,9 @@ export default {
                     console.error('Error deleting user:', error);
                 });
         },
+
+        ///////////////////////////////////////////////////////////////////////////
+        //add user
         openAddUserDialog() {
             this.addUserDialog = true;
         },
@@ -735,3 +911,13 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.green-border {
+    border: 2px solid green;
+}
+
+.red-border {
+    border: 2px solid red;
+}
+</style>	

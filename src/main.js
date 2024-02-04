@@ -1,7 +1,8 @@
-import {createApp} from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
-import {router} from './router'
+import { router } from './router'
 import '@mdi/font/css/materialdesignicons.css'
+import NavBar from './components/NavBar'
 
 // Vuetify
 import 'vuetify/styles'
@@ -12,8 +13,11 @@ import * as directives from 'vuetify/directives'
 const vuetify = createVuetify({
   components,
   directives,
-  iconfont:'mdi',
+  iconfont: 'mdi',
 })
 
+const app = createApp(App)
 
-createApp(App).use(vuetify).use(router).mount('#app')
+app.component('NavBar', NavBar)
+
+app.use(vuetify).use(router).mount('#app')

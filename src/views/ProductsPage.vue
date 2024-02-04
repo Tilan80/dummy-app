@@ -30,7 +30,7 @@
             </v-col>
 
             <v-col>
-                <v-btn @click="openAddProductDialog">Add New Product</v-btn>
+                <v-btn class="green-border" @click="openAddProductDialog">Add New Product</v-btn>
             </v-col>
         </v-row>
 
@@ -69,17 +69,17 @@
                     <v-card-subtitle>{{ product.stock }} In Stock</v-card-subtitle>
                     <v-menu>
                         <template v-slot:activator="{ props }">
-                            <v-btn icon="mdi-dots-vertical" elevation="5" v-bind="props"></v-btn>
+                            <v-btn icon="mdi-dots-vertical" elevation="5" class="ma-2" v-bind="props"></v-btn>
                         </template>
 
                         <v-list>
-                            <v-list-item @click="openUpdateProductDialog(product)">
+                            <v-list-item class="text-blue-darken-3" @click="openUpdateProductDialog(product)">
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-pencil"></v-icon>
                                 </template>
                                 <v-list-item-title>Update</v-list-item-title>
                             </v-list-item>
-                            <v-list-item @click="deleteProduct(product.id)">
+                            <v-list-item class="text-red-darken-3" @click="deleteProduct(product.id)">
                                 <template v-slot:prepend>
                                     <v-icon icon="mdi-delete"></v-icon>
                                 </template>
@@ -143,11 +143,17 @@
                 </v-card-text>
                 <v-card-actions>
                     <!-- Button to submit the updated product -->
-                    <v-btn @click="submitUpdatedProduct">Submit</v-btn>
+                    <v-btn class="blue-text" @click="submitUpdatedProduct">Submit</v-btn>
                     <v-btn @click="closeUpdateProductDialog">Cancel</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!-- loading animation -->
+        <v-row v-if="loading">
+            <v-col>
+                <v-progress-circular indeterminate color="primary"></v-progress-circular>
+            </v-col>
+        </v-row>
     </v-container>
 </template>
   
@@ -194,6 +200,7 @@ export default {
                 thumbnail: '',
                 images: [],
             },
+            loading: false,
         };
     },
     computed: {
@@ -204,10 +211,8 @@ export default {
         },
     },
     methods: {
-        menuClicked() {
-            console.log('Menu Clicked');
-        },
         getAllProducts() {
+            this.loading = true;
             axios.get('https://dummyjson.com/products?limit=99')
                 .then(response => {
                     this.products = response.data.products;
@@ -217,6 +222,9 @@ export default {
                 })
                 .catch(error => {
                     console.error('Error fetching products:', error);
+                })
+                .finally(() => {
+                    this.loading = false;
                 });
         },
         toggleSingleProduct() {
@@ -404,4 +412,9 @@ export default {
     },
 };
 </script>
-  
+
+<style scoped>
+.green-border {
+    border: 2px solid green;
+}
+</style>
