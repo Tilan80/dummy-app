@@ -154,6 +154,7 @@
                 <v-progress-circular indeterminate color="primary"></v-progress-circular>
             </v-col>
         </v-row>
+        <NavBar/>
     </v-container>
 </template>
   

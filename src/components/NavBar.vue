@@ -1,62 +1,37 @@
+<!-- YourMainComponent.vue -->
 <template>
-    <v-app>
-      <v-app-bar app class="absolute" z-index="1000">
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>
-          <router-link to="/home" class="router-link">Dummy App</router-link>
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-  
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      </v-app-bar>
-  
-      <v-navigation-drawer app v-model="drawer" class="absolute" z-index="999">
-        <v-list>
-          <v-list-item v-for="link in links" :key="link.text" :to="link.to" link>
-            <v-list-item-icon>
-              <v-icon>{{ link.icon }}</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>
-                <router-link :to="link.to" class="router-link">{{ link.text }}</router-link>
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-  
-      <v-main>
-        <!-- Your main content goes here -->
-        <router-view></router-view>
-      </v-main>
-    </v-app>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        drawer: false,
-        links: [
-          { text: 'Products', to: '/products', icon: 'mdi-shopping' },
-          { text: 'Carts', to: '/carts', icon: 'mdi-cart' },
-          { text: 'Users', to: '/users', icon: 'mdi-account' },
-        ],
-      };
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .router-link {
-    text-decoration: none;
-    color: inherit;
-  }
-  .absolute {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-  </style>
-  
+  <v-layout>
+    <v-navigation-drawer expand-on-hover rail>
+      <v-list>
+        <v-list-item prepend-icon="mdi-home" title="Dummy APP" to="/home"></v-list-item>
+      </v-list>
+
+      <v-divider></v-divider>
+
+      <v-list density="compact" nav>
+        <v-list-item prepend-icon="mdi-folder" title="Products" to="products"></v-list-item>
+        <v-list-item prepend-icon="mdi-cart-outline" title="Carts" to="carts"></v-list-item>
+        <v-list-item prepend-icon="mdi-account" title="Users" to="/users"></v-list-item>
+        <v-divider></v-divider>
+        <!-- Use the CustomLogoutButton component here -->
+        <v-list-item prepend-icon="mdi-logout" title="Logout" @click="logout"></v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-main style="height: 250px"></v-main>
+  </v-layout>
+</template>
+
+<script setup>
+import Userfront from "@userfront/toolkit/vue";
+import { ref } from "vue";
+
+Userfront.init("wn98qmjb");
+
+const user = ref(null);
+
+const logout = async () => {
+  await Userfront.logout();
+  user.value = null; // Clear the user data
+};
+</script>

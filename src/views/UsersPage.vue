@@ -483,6 +483,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <NavBar/>
     </v-container>
 </template>
   
