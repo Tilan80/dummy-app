@@ -13,7 +13,7 @@ const isAuthenticated = () => {
 };
 
 export const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory('/dummy-app/'),
     routes: [
         {
             path: "/",
