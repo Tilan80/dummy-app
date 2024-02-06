@@ -33,19 +33,19 @@ export default {
           id: 1,
           title: 'Products',
           icon: 'mdi-folder',
-          to: '/products',
+          to: '/dummy-app/products',
         },
         {
           id: 2,
           title: 'Carts',
           icon: 'mdi-cart-outline',
-          to: '/carts',
+          to: '/dummy-app/carts',
         },
         {
           id: 3,
           title: 'Users',
           icon: 'mdi-account',
-          to: '/users',
+          to: '/dummy-app/users',
         },
       ],
     };
