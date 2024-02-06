@@ -45,6 +45,10 @@ export const router = createRouter({
             component: Users,
             meta: { requiresAuth: true },
         },
+        {
+            path: "/:pathMatch(.*)",
+            redirect: "/" // Redirect to home page
+        },
     ]
 })
 
