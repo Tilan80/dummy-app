@@ -7,13 +7,9 @@ import Users from "./views/UsersPage.vue";
 import Signup from "./views/SignupPage.vue";
 import Cookies from "js-cookie";
 
-const isAuthenticated = () => {
-    const accessToken = Cookies.get("access.wn98qmjb");
-    return !!accessToken;
-};
 
 export const router = createRouter({
-    history: createWebHistory('/dummy-app/'),
+    history: createWebHistory(process.env.BASE_URL),
     routes: [
         {
             path: "/",
@@ -26,7 +22,7 @@ export const router = createRouter({
             component: Signup,
         },
         {
-            path: "/Home",
+            path: "/home",
             name: "Home",
             component: Home,
             meta: { requiresAuth: true },
@@ -54,7 +50,16 @@ export const router = createRouter({
 
 // Global navigation guard
 router.beforeEach((to, from, next) => {
-    if (to.meta.requiresAuth && !isAuthenticated()) {
+    const isAuthenticated = !!Cookies.get("access.wn98qmjb");
+
+    if (to.name === 'Login' || to.name === 'Signup') {
+        // If the user is authenticated, redirect to the Home page
+        if (isAuthenticated) {
+            next({ name: "Home" });
+        } else {
+            next();
+        }
+    } else if (to.meta.requiresAuth && !isAuthenticated) {
         // Redirect to the login page if authentication is required and the user is not authenticated
         next({ name: "Login" });
     } else {
@@ -62,5 +67,6 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
+
 
 export default router;
