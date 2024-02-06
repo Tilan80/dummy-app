@@ -1,7 +1,7 @@
 <template>
     <div class="login-container">
       <signup-form />
-      <v-btn to="/dummy-app/" class="signup-button bg-indigo-darken-1">Log in</v-btn>
+      <v-btn to="/" class="signup-button bg-indigo-darken-1">Log in</v-btn>
     </div>
   </template>
   
