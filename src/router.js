@@ -47,7 +47,7 @@ export const router = createRouter({
         },
         {
             path: "/:pathMatch(.*)",
-            redirect: "/" // Redirect to home page
+            redirect: "/dummy-app/"
         },
     ]
 })
